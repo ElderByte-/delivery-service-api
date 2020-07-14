@@ -31,7 +31,7 @@ docker run -p 9091:8080 swaggerapi/swagger-editor
 - Open Browser `http://localhost:9091`
 - Choose delivery-service-api/spec/spec.yaml using `File / Import file` 
 - Edit the spec
-- Export the file and commit under delivery-service-api/spec/spec.yaml
+- Export the spec and commit under delivery-service-api/spec/spec.yaml
 
 ___
 
