@@ -150,7 +150,7 @@ components:
       name: X-API-KEY
   schemas:
     #################################
-    ########## DEFINITION OF DELIVERY
+    #### DEFINITION OF DELIVERY ORDER
     #################################
     DeliveryOrder:
       type: object
@@ -178,21 +178,10 @@ components:
               type: string
             unit:
               type: string
-        packages: # Package information are given by
+        packages:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-              weight:
-                $ref: '#/components/schemas/Quantity'
-              dimensions:
-                $ref: '#/components/schemas/Dimension'
-              items:
-                type: array
-                items:
-                  type: string
+            $ref: '#/components/schemas/Package'
         properties:
           type: object
           properties:
@@ -214,6 +203,24 @@ components:
           $ref: '#/components/schemas/Address'
         pickupContact:
           $ref: '#/components/schemas/Contact'
+    #################################
+    ########## DEFINITION OF PACKAGES
+    #################################
+    Package:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          weight:
+            $ref: '#/components/schemas/Quantity'
+          dimensions:
+            $ref: '#/components/schemas/Dimension'
+          items:
+            type: array
+            items:
+              type: string
     #################################
     ########## DEFINITION OF DELIVERY
     #################################
