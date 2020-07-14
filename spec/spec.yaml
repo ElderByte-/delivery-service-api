@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Transport and External Carriers
-  description: "This document is a draft api between the transport system  and external carriers. <br> The api describes: <ul><li> How to query and filter existing deliveries </li><li>How to upsert deliveries</li><li>How to delete existing deliveries</li></ul><i>The api is maintained by [ElderByte AG](http://elderbyte.com) and [ACS](https://www.acs-ag.com/).</i>"
+  title: Transport and External Delivery Services
+  description: "This document is a draft api between the transport system  and external delivery services. <br> The api describes: <ul><li> How to query and filter existing deliveries </li><li>How to upsert deliveries</li><li>How to delete existing deliveries</li></ul><i>The api is maintained by [ElderByte AG](http://elderbyte.com) and [ACS](https://www.acs-ag.com/).</i>"
   version: 0.0.2
 tags:
   - name: deliveries
@@ -21,13 +21,13 @@ paths:
       parameters:
         - name: customerId
           in: header
-          description: Customer identification
+          description: Customer identification.
           required: true
           schema:
             type: string
         - name: stateChangedSince
           in: query
-          description: Filters by deliveries which changed their current state since stateChangedSince
+          description: Filters by deliveries which changed their current state since 'stateChangedSince'.
           required: false
           schema:
             type: string
@@ -41,19 +41,19 @@ paths:
               type: string
         - name: soloRequired
           in: query
-          description: Filters by deliveries which require a solo truck.
+          description: Filters by requiring a solo truck.
           required: false
           schema:
             type: boolean
         - name: magexOnlyTransportRequired
           in: query
-          description: Filters by deliveries which require magex delivery.
+          description: Filters by requiring magex only transport delivery.
           required: false
           schema:
             type: boolean
         - name: craneRequired
           in: query
-          description: Filters by deliveries which require a crane.
+          description: Filters by requiring a crane.
           required: false
           schema:
             type: boolean
@@ -214,17 +214,17 @@ components:
               type: boolean
         note:
           type: string
-        targetCustomer:
+        targetCustomerName:
           type: string
-        targetAddress:
+        dropoffAddress:
           $ref: '#/components/schemas/Address'
-        targetContact:
+        dropoffContact:
           $ref: '#/components/schemas/Contact'
-        customer:
+        customerName:
           type: string
-        customerAddress:
+        pickupAddress:
           $ref: '#/components/schemas/Address'
-        customerContact:
+        pickupContact:
           $ref: '#/components/schemas/Contact'
     #################################
     #### DEFINITION OF DELIVERY STATE
@@ -244,8 +244,6 @@ components:
               state:
                 $ref: '#/components/schemas/State'
               stateTimestamp:
-                type: string
-              stateInformation:
                 type: string
         estimatedDeliveryTimeFrame:
           type: string
