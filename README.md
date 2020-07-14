@@ -15,7 +15,7 @@ ___
 
 ### View the API with Swagger Tools
 ```
-cd [absolute-project-path]
+cd [absolute-repo-path]
 docker run -p 9090:8080 -e SWAGGER_JSON=/spec.yaml -v $(pwd)/spec/spec.yaml:/spec.yaml swaggerapi/swagger-ui
 ```
 - Open Browser `http://localhost:9090`
@@ -24,14 +24,14 @@ ___
 
 ### Edit the API with Swagger Tools
 ```
-cd [absolute-project-path]
-docker run -d -p 9091:8080 -v $(pwd)/spec:/usr/share/nginx/html/delivery-services swaggerapi/swagger-editor
+cd [absolute-repo-path]
+docker run -p 9091:8080 swaggerapi/swagger-editor
 ```
 
 - Open Browser `http://localhost:9091`
-- Import URL /delivery-services/spec.yaml
+- Choose delivery-service-api/spec/spec.yaml using `File / Import file` 
 - Edit the spec
-- Export the file and commit under spec/spec.yaml
+- Export the file and commit under delivery-service-api/spec/spec.yaml
 
 ___
 
