@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Transport and External Delivery Services
-  description: "This document is a draft api between the transport system  and external delivery services. <br> The api describes: <ul><li> How to query and filter existing deliveries </li><li>How to upsert deliveries</li><li>How to delete existing deliveries</li></ul><i>The api is maintained by [ElderByte AG](http://elderbyte.com) and [ACS](https://www.acs-ag.com/).</i>"
+  description: "This document is a draft api between the transport system  and external delivery services. <br> The api describes: <ul><li> How to query and filter existing deliveries </li><li>How to upsert deliveries</li></ul><i>The api is maintained by [ElderByte AG](http://elderbyte.com) and [ACS](https://www.acs-ag.com/).</i>"
   version: 0.0.2
 tags:
   - name: deliveries
@@ -39,21 +39,21 @@ paths:
             type: array
             items:
               type: string
-        - name: soloRequired
+        - name: property1
           in: query
-          description: Filters by requiring a solo truck.
+          description: Filters by property1.
           required: false
           schema:
             type: boolean
-        - name: magexOnlyTransportRequired
+        - name: property2
           in: query
-          description: Filters by requiring magex only transport delivery.
+          description: Filters by property2.
           required: false
           schema:
             type: boolean
-        - name: craneRequired
+        - name: propertyN
           in: query
-          description: Filters by requiring a crane.
+          description: Filters by propertyN.
           required: false
           schema:
             type: boolean
@@ -65,7 +65,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DeliveryState'
+                  $ref: '#/components/schemas/Delivery'
   '/deliveries/{deliveryId}':
     get:
       tags:
@@ -89,7 +89,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeliveryState'
+                $ref: '#/components/schemas/Delivery'
         '404':
           description: Delivery not found
     #################################
@@ -98,7 +98,7 @@ paths:
     put:
       tags:
         - deliveries
-      summary: 'Upsert a delivery: Update an existing delivery, create a non-existing delivery'
+      summary: 'Upsert a delivery: Update an existing delivery order, create a non-existing delivery order'
       parameters:
         - name: customerId
           in: header
@@ -117,44 +117,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Delivery'
+              $ref: '#/components/schemas/DeliveryOrder'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeliveryState'
+                $ref: '#/components/schemas/Delivery'
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeliveryState'
-    #################################
-    ############### DELIVERIES DELETE
-    #################################
-    delete:
-      tags:
-        - deliveries
-      summary: 'Delete a delivery'
-      parameters: 
-        - name: customerId
-          in: header
-          description: Customer identification
-          required: true
-          schema:
-            type: string
-        - name: deliveryId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-        '404':
-          description: 'Delivery not found'
+                $ref: '#/components/schemas/Delivery'
 #################################
 ########### APPLY GLOBAL SECURITY
 #################################
@@ -176,21 +152,33 @@ components:
     #################################
     ########## DEFINITION OF DELIVERY
     #################################
-    Delivery:
+    DeliveryOrder:
       type: object
+      required: 
+        - id
+        - state
+        - deliveryTimeFrame
+        - issuerContact
+        - dropoffAddress
+        - dropoffContact
+        - pickupAddress
+        - pickupContact
       properties:
         id:
           type: string
+        state:
+          $ref: '#/components/schemas/DeliveryOrderState'
         deliveryTimeFrame:
           type: string
+          description: ISO interval (Instant from / Instant to)
         totalWeight:
-          type: object
+          $ref: '#/components/schemas/Quantity'
           properties:
             value:
               type: string
             unit:
               type: string
-        bundles: # Bundle information are given by
+        packages: # Package information are given by
           type: array
           items:
             type: object
@@ -198,55 +186,60 @@ components:
               id:
                 type: string
               weight:
-                type: string
-              positions:
+                $ref: '#/components/schemas/Quantity'
+              dimensions:
+                $ref: '#/components/schemas/Dimension'
+              items:
                 type: array
                 items:
                   type: string
         properties:
           type: object
           properties:
-            magexOnlyTransportRequired:
-              type: boolean
-            soloRequired:
-              type: boolean
-            craneRequired:
-              type: boolean
+            property1:
+              type: string
+            property2:
+              type: string
+            propertyN:
+              type: string
         note:
           type: string
-        targetCustomerName:
-          type: string
+        issuerContact:
+          $ref: '#/components/schemas/Contact'
         dropoffAddress:
           $ref: '#/components/schemas/Address'
         dropoffContact:
           $ref: '#/components/schemas/Contact'
-        customerName:
-          type: string
         pickupAddress:
           $ref: '#/components/schemas/Address'
         pickupContact:
           $ref: '#/components/schemas/Contact'
     #################################
-    #### DEFINITION OF DELIVERY STATE
+    ########## DEFINITION OF DELIVERY
     #################################
-    DeliveryState:
+    Delivery:
       type: object
+      required: 
+        - id
+        - state
+        - deliveryOrder
       properties:
         id:
           type: string
         state:
-          $ref: '#/components/schemas/State'
+          $ref: '#/components/schemas/DeliveryState'
         stateHistory:
           type: array
           items:
             type: object
             properties:
               state:
-                $ref: '#/components/schemas/State'
+                $ref: '#/components/schemas/DeliveryState'
               stateTimestamp:
                 type: string
         estimatedDeliveryTimeFrame:
           type: string
+          description: ISO interval (Instant from / Instant to)
         note:
           type: string
         printLabel:
@@ -256,8 +249,8 @@ components:
               type: boolean
             data:
               $ref: '#/components/schemas/PrintLabel'
-        delivery:
-          $ref: '#/components/schemas/Delivery'
+        deliveryOrder:
+          $ref: '#/components/schemas/DeliveryOrder'
     #################################
     ## DEFINITION OF PRINT LABEL DATA
     #################################
@@ -271,21 +264,35 @@ components:
         field3:
           type: string
     #################################
-    ############# DEFINITION OF STATE
+    ##### DEFINITION OF DELIVERY STATE
     #################################
-    State:
+    DeliveryState:
       type: string
       enum:
-        - DATA_RECEIVED
-        - DATA_CONFIRMED
-        - DELIVERY_IN_PROGRESS
-        - DELIVERY_COMPLETED
-        - DELIVERY_FAILED
+        - PREVIEW
+        - CONFIRMED
+        - CANCELED
+        - IN_PROGRESS
+        - COMPLETED
+        - FAILED
+    #################################
+    #DEFINITION OF DELIVERY ORDER STATE
+    #################################
+    DeliveryOrderState:
+      type: string
+      enum:
+        - PREVIEW
+        - COMPLETED
+        - CANCELED
     #################################
     ########### DEFINITION OF ADDRESS
     #################################
     Address:
       type: object
+      required: 
+        - street
+        - zip
+        - city
       properties:
             name:
               type: string
@@ -308,6 +315,9 @@ components:
     #################################
     Contact:
       type: object
+      required: 
+        - lastName
+        - phones
       properties:
         title:
           type: string
@@ -321,6 +331,39 @@ components:
           type: array
           items:
             type: string
+    #################################
+    ######### DEFINITION OF DIMENSION
+    #################################
+    Dimension:
+      type: object
+      required: 
+        - width
+        - height
+        - length
+        - unit
+      properties:
+        width:
+          type: string
+        height: 
+          type: string
+        length:
+          type: string
+        unit:
+          type: string
+    #################################
+    ########### DEFINITION OF Quantity
+    #################################
+    Quantity:
+      type: object
+      required: 
+        - value
+        - unit
+      properties:
+        value:
+          type: string
+        unit:
+          type: string
+          
         
             
           
