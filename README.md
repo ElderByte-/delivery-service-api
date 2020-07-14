@@ -2,8 +2,10 @@
 
 This is a draft api between the transport system  and external delivery services.  
 
-The api describes:  
+The api describes: 
+
 - Query and filter existing deliveries 
+- Upsert deliveries
 
 
 ### The API definition is located at spec/spec.yaml
@@ -11,6 +13,14 @@ The api describes:
 ___
 
 ### View the API with Swagger Tools
+
+Use
+```
+https://petstore.swagger.io/?url=https://raw.githubusercontent.com/ElderByte-/delivery-service-api/master/spec/spec.yaml
+```  
+
+or
+
 ```
 cd [absolute-repo-path]
 docker run -p 9090:8080 -e SWAGGER_JSON=/spec.yaml -v $(pwd)/spec/spec.yaml:/spec.yaml swaggerapi/swagger-ui
@@ -20,6 +30,14 @@ docker run -p 9090:8080 -e SWAGGER_JSON=/spec.yaml -v $(pwd)/spec/spec.yaml:/spe
 ___
 
 ### Edit the API with Swagger Tools
+
+Use 
+```
+https://editor.swagger.io/?url=https://raw.githubusercontent.com/ElderByte-/delivery-service-api/master/spec/spec.yaml
+```
+
+or
+
 ```
 cd [absolute-repo-path]
 docker run -p 9091:8080 swaggerapi/swagger-editor
@@ -41,4 +59,3 @@ ___
 This repository is maintained and the api is designed by 
 
 <a href="http://elderbyte.com"><img height=50px src="docs/logos/elderbyte.png"></a>  
-<a href="https://www.acs-ag.com"><img height=30px src="docs/logos/acs.png"></a>
