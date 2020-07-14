@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: Transport and External Carriers
+  description: "This document is a draft api between the transport system  and external carriers. <br> The api describes: <ul><li> How to query and filter existing deliveries </li><li>How to upsert deliveries</li><li>How to delete existing deliveries</li></ul><i>The api is maintained by [ElderByte AG](http://elderbyte.com) and [ACS](https://www.acs-ag.com/).</i>"
+  version: 0.0.2
+tags:
+  - name: deliveries
+    description: Upserting, deleting and requesting state about deliveries.
+paths:
+#################################
+###################### DELIVERIES
+#################################
+  /deliveries:
+    #################################
+    ################## DELIVERIES GET
+    #################################
+    get:
+      tags:
+        - deliveries
+      summary: Query and filter deliveries
+      parameters:
+        - name: customerId
+          in: header
+          description: Customer identification
+          required: true
+          schema:
+            type: string
+        - name: stateChangedSince
+          in: query
+          description: Filters by deliveries which changed their current state since stateChangedSince
+          required: false
+          schema:
+            type: string
+        - name: states
+          in: query
+          description: Filters by deliveries with matching state.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: soloRequired
+          in: query
+          description: Filters by deliveries which require a solo truck.
+          required: false
+          schema:
+            type: boolean
+        - name: magexOnlyTransportRequired
+          in: query
+          description: Filters by deliveries which require magex delivery.
+          required: false
+          schema:
+            type: boolean
+        - name: craneRequired
+          in: query
+          description: Filters by deliveries which require a crane.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: All deliveries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeliveryState'
+  '/deliveries/{deliveryId}':
+    get:
+      tags:
+        - deliveries
+      summary: Query a specific delivery
+      parameters:
+        - name: customerId
+          in: header
+          description: Customer identification
+          required: true
+          schema:
+            type: string
+        - name: deliveryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A delivery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryState'
+        '404':
+          description: Delivery not found
+    #################################
+    ################## DELIVERIES PUT
+    #################################
+    put:
+      tags:
+        - deliveries
+      summary: 'Upsert a delivery: Update an existing delivery, create a non-existing delivery'
+      parameters:
+        - name: customerId
+          in: header
+          description: Customer identification
+          required: true
+          schema:
+            type: string
+        - name: deliveryId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The delivery to upsert
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Delivery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryState'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryState'
+    #################################
+    ############### DELIVERIES DELETE
+    #################################
+    delete:
+      tags:
+        - deliveries
+      summary: 'Delete a delivery'
+      parameters: 
+        - name: customerId
+          in: header
+          description: Customer identification
+          required: true
+          schema:
+            type: string
+        - name: deliveryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: 'Delivery not found'
+#################################
+########### APPLY GLOBAL SECURITY
+#################################
+security: 
+ - CarrierAPIKey: []
+#################################
+###################### COMPONENTS
+#################################
+components:
+  #################################
+  ## DEFINITION OF SECURITY SCHEMES
+  #################################
+  securitySchemes:
+    CarrierAPIKey:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    #################################
+    ########## DEFINITION OF DELIVERY
+    #################################
+    Delivery:
+      type: object
+      properties:
+        id:
+          type: string
+        deliveryTimeFrame:
+          type: string
+        totalWeight:
+          type: object
+          properties:
+            value:
+              type: string
+            unit:
+              type: string
+        bundles: # Bundle information are given by
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              weight:
+                type: string
+              positions:
+                type: array
+                items:
+                  type: string
+        properties:
+          type: object
+          properties:
+            magexOnlyTransportRequired:
+              type: boolean
+            soloRequired:
+              type: boolean
+            craneRequired:
+              type: boolean
+        note:
+          type: string
+        targetCustomer:
+          type: string
+        targetAddress:
+          $ref: '#/components/schemas/Address'
+        targetContact:
+          $ref: '#/components/schemas/Contact'
+        customer:
+          type: string
+        customerAddress:
+          $ref: '#/components/schemas/Address'
+        customerContact:
+          $ref: '#/components/schemas/Contact'
+    #################################
+    #### DEFINITION OF DELIVERY STATE
+    #################################
+    DeliveryState:
+      type: object
+      properties:
+        id:
+          type: string
+        state:
+          $ref: '#/components/schemas/State'
+        stateHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              state:
+                $ref: '#/components/schemas/State'
+              stateTimestamp:
+                type: string
+              stateInformation:
+                type: string
+        estimatedDeliveryTimeFrame:
+          type: string
+        note:
+          type: string
+        printLabel:
+          type: object
+          properties:
+            required:
+              type: boolean
+            data:
+              $ref: '#/components/schemas/PrintLabel'
+        delivery:
+          $ref: '#/components/schemas/Delivery'
+    #################################
+    ## DEFINITION OF PRINT LABEL DATA
+    #################################
+    PrintLabel:
+      type: object
+      properties:
+        field1:
+          type: string
+        field2:
+          type: string
+        field3:
+          type: string
+    #################################
+    ############# DEFINITION OF STATE
+    #################################
+    State:
+      type: string
+      enum:
+        - DATA_RECEIVED
+        - DATA_CONFIRMED
+        - DELIVERY_IN_PROGRESS
+        - DELIVERY_COMPLETED
+        - DELIVERY_FAILED
+    #################################
+    ########### DEFINITION OF ADDRESS
+    #################################
+    Address:
+      type: object
+      properties:
+            name:
+              type: string
+            street:
+              type: string
+            poBox:
+              type: string
+            additive:
+              type: string
+            city:
+              type: string
+            zip:
+              type: string
+            state:
+              type: string
+            country:
+              type: string
+    #################################
+    ########### DEFINITION OF CONTACT
+    #################################
+    Contact:
+      type: object
+      properties:
+        title:
+          type: string
+        lastName:
+          type: string
+        firstName:
+          type: string
+        email:
+          type: string
+        phones:
+          type: array
+          items:
+            type: string
+        
+            
+          
