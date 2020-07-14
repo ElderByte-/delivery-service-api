@@ -5,7 +5,7 @@ This is a draft api between the transport system  and external delivery services
 The api describes: 
 
 - Query and filter existing deliveries 
-- Upsert deliveries
+- Upsert delivery orders
 
 
 ### The API definition is located at spec/spec.yaml
