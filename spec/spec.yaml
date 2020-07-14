@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Transport and External Delivery Services 
-  description: "This document is a draft api between the transport system  and external delivery services. <br> The api describes: <ul><li> How to query and filter existing deliveries </li><li>How to upsert deliveries</li></ul><i>The api is maintained by [ElderByte AG](http://elderbyte.com).</i>"
+  description: "This document is a draft api between the transport system  and external delivery services. <br> The api describes: <ul><li> How to query and filter existing deliveries </li><li>How to upsert derlivery orders</li></ul><i>The api is maintained by [ElderByte AG](http://elderbyte.com).</i>"
   version: 0.0.2
 tags:
   - name: deliveries
