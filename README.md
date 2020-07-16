@@ -1,6 +1,6 @@
-# Delivery Service API
+# DEXIS - Delivery Exchange Interface Specification
 
-This is a draft api between the transport system  and external delivery services.  
+DEXIS is a specification defining a simple API which can be used between a customer and hauler firm to exchange data about delivery orders.
 
 The api describes: 
 
